@@ -114,7 +114,8 @@ local function generate(numClauses, game, conjunctionsFromGame)
 
     if conjunctionsFromGame then
         game.conjunctions = conjunctionsFromGame.conjunctions
-    elseif not game.conjunctions then
+    end
+    if not game.conjunctions then
         numClauses = 1
     end
 
