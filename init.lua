@@ -7,123 +7,104 @@ local games = {
     sekiro = require "sekiro",
     eldenRing = require "eldenRing",
 }
+local templateWords = games.des.wordsByTemplate
 
-local function deepCopyAsSet(t, into)
-    local res = into or {}
-    for k, v in pairs(t) do
-        if type(v) == "table" then
-            res[k] = deepCopyAsSet(v, res[k])
-        else
-            res[v] = true
-        end
-    end
-    return res
-end
-
-local function deepSetToList(t)
-    local list = {}
-    for k, v in pairs(t) do
-        if type(v) == "table" then
-            deepSetToList(v)
-        else
-            table.insert(list, k)
-        end
-    end
-    for i, v in ipairs(list) do
-        t[i] = v
-        t[v] = nil
-    end
-end
-
-local function combine(tables)
-    local res = {}
-    for _, t in pairs(tables) do
-        res = deepCopyAsSet(t, res)
-    end
-    deepSetToList(res)
-    return res
-end
-
-for _, game in pairs(games) do
-    local allWords = {}
-    for _, category in pairs(game.words) do
-        for _, word in ipairs(category) do
-            table.insert(allWords, word)
-        end
-    end
-    game.words = allWords
-
-    --templates not a list, therefore multiple template categories
-    if not game.templates[1] then
-        local allTemplates = {}
-        for _, category in pairs(game.templates) do
-            -- shut up
-            ---@diagnostic disable-next-line: param-type-mismatch
-            for _, template in ipairs(category) do
-                table.insert(allTemplates, template)
-            end
-        end
-        game.templates = allTemplates
-    end
-
-    setmetatable(game, {
-        __add = function(self, other)
-            return combine({self, other})
-        end
-    })
-end
-
-do local all
-    for _, v in pairs(games) do
-        if not all then all = v
-        else all = all + v end
-    end
-    games.all = all
-end
-
-local function deepPrint(t, indent)
-    indent = indent or ""
-    if t[1] then
-        for i, v in ipairs(t) do
-            print((indent.."%i: %s"):format(i, v))
-        end
-    end
-
-    for k, v in pairs(t) do
-        if type(k) ~= "number" then
+local function deepIter(nested)
+    local function recurse(t)
+        for _, v in pairs(t) do
             if type(v) == "table" then
-                print((indent.."%s:"):format(k))
-                deepPrint(v, indent.."        ")
+                recurse(v)
             else
-                print((indent.."%s: %s"):format(k, v))
+                coroutine.yield(v)
             end
         end
     end
+    return coroutine.wrap(function()
+        recurse(nested)
+    end)
+end
 
+local function union(...)
+    local set = {}
+    for i = 1, select("#", ...) do
+        local t = select(i, ...)
+        for _, v in ipairs(t) do
+            set[v] = true
+        end
+    end
+
+    local res = {}
+    for v in pairs(set) do
+        table.insert(res, v)
+    end
+    return res
+end
+
+local mt = {
+    __add = function(a, b)
+        local res = {}
+        for k in pairs(a) do
+            res[k] = union(a[k], b[k])
+        end
+        return res
+    end
+}
+
+for gameName, game in pairs(games) do
+    local flattened = {
+        templates = {},
+        conjunctions = {},
+        words = {},
+    }
+    for template in deepIter(game.templates) do
+        table.insert(flattened.templates, template)
+    end
+
+    for _, conjunction in ipairs(game.conjunctions or {}) do
+        table.insert(flattened.conjunctions, conjunction)
+    end
+
+    for word in deepIter(game.words) do
+        table.insert(flattened.words, word)
+    end
+
+    games[gameName] = setmetatable(flattened, mt)
+    games.all = games.all and (games.all + flattened) or flattened
 end
 
 local function choose(t)
-    if t[1] then
-        return t[math.random(#t)]
+    return t[math.random(#t)]
+end
+
+local function getTemplate(templates)
+    local res
+    -- make templates without wildcards less likely
+    for _ = 1, 5 do
+        res = choose(templates)
+        if res:find("*") then return res end
     end
-    local list = {}
-    for k, v in pairs(t) do
-        table.insert(list, v)
+    return res
+end
+
+local function getWord(game, template)
+    if game == games.des and templateWords[template] then
+        return choose(templateWords[template])
     end
-    return choose(list)
+    return choose(game.words)
 end
 
 local function getConjunction(conjunctions, sentence)
+    local sentenceEndsInPunctuation = sentence:find("%p", -1)
+
+if #conjunctions == 0 then return sentenceEndsInPunctuation and "" or "." end
     local conjunction = choose(conjunctions)
 
-    local sentenceEndsInPunctuation = sentence:find("%p", -1)
+
     local conjunctionStartsWithPunctiation = conjunction:find("%p", 1)
 
     if sentenceEndsInPunctuation and conjunctionStartsWithPunctiation then
-        return " "
+        return ""
     end
-    -- space after any nonempty conjunction
-    conjunction = conjunction .. " "
 
     -- space before any nonpunctuation conjunction
     if not conjunctionStartsWithPunctiation then
@@ -133,50 +114,35 @@ local function getConjunction(conjunctions, sentence)
 
 end
 
-local function getWord(game, template)
-    if game.wordsByTemplate and game.wordsByTemplate[template] then
-        return choose(game.wordsByTemplate[template])
-    else
-        return choose(game.words)
-    end
-end
 
-local function generate(numClauses, game, conjunctionsFromGame)
-    game = game or combine(games)
-
-    if conjunctionsFromGame then
-        game.conjunctions = conjunctionsFromGame.conjunctions
-    end
-    if not game.conjunctions then
-        numClauses = 1
-    end
-
+local function generate(len, game, conjunctionsFromGame)
+    game = game or games.all
+    local conjunctions = (conjunctionsFromGame or game).conjunctions
     local sentence
-    for i = 1, numClauses do
-        local clause
-        -- make templates without wildcards less likely
-        for _ = 1, 5 do
-            clause = choose(game.templates)
-            if clause:find("*") then break end
-        end
-        clause = clause:gsub("*", getWord(game, clause))
 
-        if sentence == nil then
-            sentence = clause
+    for i = 1, len do
+        local template = getTemplate(game.templates)
+        local word = getWord(game, template)
+        local clause = template:gsub("*", word)
+
+        if sentence then
+            local conjunction = getConjunction(conjunctions, sentence)
+            sentence = ("%s%s %s"):format(sentence, conjunction, clause)
         else
-            local conjunction = getConjunction(game.conjunctions, sentence)
-            sentence = ("%s%s%s"):format(sentence, conjunction, clause)
+            sentence = clause
         end
     end
+
     return sentence
+
 end
 
--- for i = 1, 2 do
---     for _ = 1, 8 do
---         print(generate(i))
+-- for i = 1, 3 do
+--     for _ = 1, 4 do
+--         print(message.generate(i))
 --     end
 -- end
 
-return setmetatable(games,{
+return setmetatable(games, {
     __call = function(_, ...) return generate(...) end
 })
