@@ -57,6 +57,14 @@ for _, game in pairs(games) do
     })
 end
 
+do local all
+    for _, v in pairs(games) do
+        if not all then all = v
+        else all = all + v end
+    end
+    games.all = all
+end
+
 local function deepPrint(t, indent)
     indent = indent or ""
     if t[1] then
@@ -137,7 +145,7 @@ end
 
 -- for i = 1, 2 do
 --     for _ = 1, 8 do
---         print(generate(i))
+--         print(generate(i, games.ds1, games.all))
 --     end
 -- end
 
