@@ -79,7 +79,7 @@ des.words = {}
 des.words.terms = {
     "Item",
     "Footsteps",
-    "At yout feet",
+    "At your feet",
     "Head",
     "Safe place",
     "Good guy",
@@ -503,7 +503,6 @@ byTemplate["You'll find * past here."] = {
     "sparkly things",
     "twinkly things",
     "true love"
-
 }
 
 byTemplate["You'll get * from the next foe."] = byTemplate["You'll find * past here."]
@@ -516,7 +515,7 @@ byTemplate["If you *, you can proceed."] = {
     "press on",
     "keep trying",
     "don't give up",
-    "diguise yourself",
+    "disguise yourself",
 }
 
 byTemplate["Use * on the next enemy."] = {
