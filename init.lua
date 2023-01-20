@@ -1,7 +1,10 @@
 local games = {
+    des = require "des",
     ds1 = require "ds1",
     ds2 = require "ds2",
+    ds3 = require "ds3",
     bloodborne = require "bloodborne",
+    sekiro = require "sekiro",
     eldenRing = require "eldenRing",
 }
 
@@ -49,6 +52,19 @@ for _, game in pairs(games) do
         end
     end
     game.words = allWords
+
+    --templates not a list, therefore multiple template categories
+    if not game.templates[1] then
+        local allTemplates = {}
+        for _, category in pairs(game.templates) do
+            -- shut up
+            ---@diagnostic disable-next-line: param-type-mismatch
+            for _, template in ipairs(category) do
+                table.insert(allTemplates, template)
+            end
+        end
+        game.templates = allTemplates
+    end
 
     setmetatable(game, {
         __add = function(self, other)
@@ -117,6 +133,14 @@ local function getConjunction(conjunctions, sentence)
 
 end
 
+local function getWord(game, template)
+    if game.wordsByTemplate and game.wordsByTemplate[template] then
+        return choose(game.wordsByTemplate[template])
+    else
+        return choose(game.words)
+    end
+end
+
 local function generate(numClauses, game, conjunctionsFromGame)
     game = game or combine(games)
 
@@ -129,9 +153,13 @@ local function generate(numClauses, game, conjunctionsFromGame)
 
     local sentence
     for i = 1, numClauses do
-        local clause = choose(game.templates)
-        local word = choose(game.words)
-        clause = clause:gsub("*", word)
+        local clause
+        -- make templates without wildcards less likely
+        for _ = 1, 5 do
+            clause = choose(game.templates)
+            if clause:find("*") then break end
+        end
+        clause = clause:gsub("*", getWord(game, clause))
 
         if sentence == nil then
             sentence = clause
@@ -145,7 +173,7 @@ end
 
 -- for i = 1, 2 do
 --     for _ = 1, 8 do
---         print(generate(i, games.ds1, games.all))
+--         print(generate(i))
 --     end
 -- end
 
