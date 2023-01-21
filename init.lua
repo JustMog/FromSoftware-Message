@@ -1,11 +1,12 @@
+local PATH = (...).."."
 local games = {
-    des = require "des",
-    ds1 = require "ds1",
-    ds2 = require "ds2",
-    ds3 = require "ds3",
-    bloodborne = require "bloodborne",
-    sekiro = require "sekiro",
-    eldenRing = require "eldenRing",
+    des = require(PATH.."des"),
+    ds1 = require(PATH.. "ds1"),
+    ds2 = require(PATH.."ds2"),
+    ds3 = require(PATH.."ds3"),
+    bloodborne = require(PATH.."bloodborne"),
+    sekiro = require(PATH.."sekiro"),
+    eldenRing = require(PATH.."eldenRing"),
 }
 local templateWords = games.des.wordsByTemplate
 
