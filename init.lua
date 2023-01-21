@@ -75,6 +75,10 @@ for gameName, game in pairs(games) do
     games.all = games.all and (games.all + flattened) or flattened
 end
 
+games.bb = games.bloodborne
+games.er = games.eldenRing
+games.sek = games.sekiro
+
 local function choose(t)
     return t[math.random(#t)]
 end

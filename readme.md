@@ -28,6 +28,10 @@ print( msg.des(2) )
 -- 2 part message using ds1 templates, but conjunctions from any game
 print( msg.ds1(2, msg.all) )
 
+-- aliases
+msg.bb()  -- msg.bloodborne()
+msg.sek() -- msg.sekiro()
+msg.er()  -- msg.eldenRing()
 
 -- If you just want the raw data:
 local eldenRing = require "FromsoftMessage.eldenRing"
