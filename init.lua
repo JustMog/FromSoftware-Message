@@ -40,13 +40,14 @@ local function union(...)
     return res
 end
 
-local mt = {
+local mt
+mt = {
     __add = function(a, b)
         local res = {}
         for k in pairs(a) do
             res[k] = union(a[k], b[k])
         end
-        return res
+        return setmetatable(res, mt)
     end
 }
 
@@ -115,7 +116,8 @@ if #conjunctions == 0 then return sentenceEndsInPunctuation and "" or "." end
 end
 
 
-local function generate(len, game, conjunctionsFromGame)
+local function generate(game, len, conjunctionsFromGame)
+    len = len or 1
     game = game or games.all
     local conjunctions = (conjunctionsFromGame or game).conjunctions
     local sentence
@@ -137,12 +139,12 @@ local function generate(len, game, conjunctionsFromGame)
 
 end
 
+mt.__call = generate
+
 -- for i = 1, 3 do
 --     for _ = 1, 4 do
---         print(message.generate(i))
+--         print(message.generate(msg.all, i))
 --     end
 -- end
 
-return setmetatable(games, {
-    __call = function(_, ...) return generate(...) end
-})
+return games
