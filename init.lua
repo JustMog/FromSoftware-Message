@@ -1,4 +1,5 @@
-local PATH = (...).."."
+local PATH = (...)
+PATH = PATH and (PATH .. ".") or ""
 local games = {
     des = require(PATH.."des"),
     ds1 = require(PATH.. "ds1"),
