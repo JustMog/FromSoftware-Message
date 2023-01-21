@@ -6,7 +6,7 @@ Usage
 ---
 This is a lua library. I might create a simple gui if there's interest.
 ```lua
-local msg = require "FromSoftware-Message"
+local msg = require "FromsoftMessage"
 print( msg.des() )          -- demon's souls message
 print( msg.ds1() )          -- dark souls 1 message
 print( msg.ds2() )          -- dark souls 2 message
@@ -30,7 +30,7 @@ print( msg.ds1(2, msg.all) )
 
 
 -- If you just want the raw data:
-local eldenRing = require "FromSoftware-Message.eldenRing"
+local eldenRing = require "FromsoftMessage.eldenRing"
 -- The structure should be pretty much as in-game.
 -- have a poke around in the source if unsure.
 print( eldenRing.templates[1] ) -- "* ahead",
