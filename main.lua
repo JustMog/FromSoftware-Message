@@ -61,7 +61,8 @@ local function gen()
 end
 err = gen()
 
-local bgCol = {43/255,57/255,77/255}
+local bgCol = {20/255,27/255,37/255}
+--{43/255,57/255,77/255}
 function love.load(args)
     love.graphics.setBackgroundColor(unpack(bgCol))
     Slab.SetINIStatePath(nil)
