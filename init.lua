@@ -1,5 +1,7 @@
 local PATH = (...)
+PATH = PATH:gsub("init", "")
 PATH = PATH and (PATH .. ".") or ""
+
 local games = {
     des = require(PATH.."des"),
     ds1 = require(PATH.. "ds1"),
@@ -45,6 +47,17 @@ end
 local mt
 mt = {
     __add = function(a, b)
+
+        if b == games.none then
+            return a
+        elseif a == games.none then
+            return b
+        end
+
+        if getmetatable(b) ~= mt then
+            error("Cant add game to type "..type(b),2)
+        end
+
         local res = {}
         for k in pairs(a) do
             res[k] = union(a[k], b[k])
@@ -103,7 +116,7 @@ end
 local function getConjunction(conjunctions, sentence)
     local sentenceEndsInPunctuation = sentence:find("%p", -1)
 
-if #conjunctions == 0 then return sentenceEndsInPunctuation and "" or "." end
+    if #conjunctions == 0 then return sentenceEndsInPunctuation and "" or "." end
     local conjunction = choose(conjunctions)
 
 
@@ -122,15 +135,30 @@ if #conjunctions == 0 then return sentenceEndsInPunctuation and "" or "." end
 end
 
 
-local function generate(game, len, conjunctionsFromGame)
-    len = len or 1
+local function generate(game, len, args)
     game = game or games.all
+    len = len or 1
+
+    local wordsFromGame = args and args.words
+    wordsFromGame = wordsFromGame or game
+
+    local conjunctionsFromGame = args and args.conjunctions
     local conjunctions = (conjunctionsFromGame or game).conjunctions
+
+    if game == games.none then
+        error("Can't make a message using no templates!", 2)
+    end
+
+    if wordsFromGame == games.none then
+        error("Can't make a message using no words!", 2)
+    end
+
+    wordsFromGame = wordsFromGame or game
     local sentence
 
     for i = 1, len do
         local template = getTemplate(game.templates)
-        local word = getWord(game, template)
+        local word = getWord(wordsFromGame, template)
         local clause = template:gsub("*", word)
 
         if sentence then
@@ -152,5 +180,7 @@ mt.__call = generate
 --         print(message.generate(msg.all, i))
 --     end
 -- end
+
+games.none = setmetatable({ conjunctions = {} }, mt)
 
 return games
