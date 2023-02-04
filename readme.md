@@ -9,7 +9,9 @@ Download and run a release, or:
     cd FromSoftMessage
     love .
 ```
-You will need Love installed (and added to system path if running from console):   https://love2d.org/
+You will need [Love](https://love2d.org/) installed  (and added to system path if running from console).
+You will also have to clone recursively if running the gui from source (but not to just use the library)
+
 
 Executable forthcoming (windows only), and hopefully web version
 ## Lua library:
