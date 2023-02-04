@@ -2,9 +2,17 @@ From Software message generator
 ===
 Generate random messages from the templates of any From Software game, or any combination of games.
 
-Usage
----
-This is a lua library. I might create a simple gui if there's interest.
+# Usage
+## Gui:
+Download and run a release, or:
+```console
+    cd FromSoftMessage
+    love .
+```
+You will need Love installed (and added to system path if running from console):   https://love2d.org/
+
+Executable forthcoming (windows only), and hopefully web version
+## Lua library:
 ```lua
 local msg = require "FromsoftMessage"
 print( msg.des() )          -- demon's souls message
@@ -59,6 +67,6 @@ print( eldenRing.words.battleTactics[1] ) -- "close-quarters battle"
 Demon's Souls' message system works differently to any other From game, in that the words you can use depend on the template selected.
 
 "Pure" Demon's Souls messages will remain faithful to ingame messages.
-"Mixed game" messages will use the "terms" category as the DeS word list, and place no restrictions on the words used in DeS templates.
+"Mixed game" messages will use the "terms" category in DeS for the DeS word list, and place no restrictions on the words used in DeS templates.
 
 I hope this strikes a good balance between faithfulness and variety.
