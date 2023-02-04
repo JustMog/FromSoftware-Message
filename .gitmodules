@@ -1,0 +1,3 @@
+[submodule "lib/slab"]
+	path = lib/slab
+	url = https://github.com/flamendless/Slab
