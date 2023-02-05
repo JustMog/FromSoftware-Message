@@ -1,4 +1,4 @@
-local Slab = require 'lib.Slab'
+local Slab = require 'lib.slab'
 local messageGen = require "init"
 
 local games = {
