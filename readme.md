@@ -4,16 +4,20 @@ Generate random messages from the templates of any From Software game, or any co
 
 # Usage
 ## Gui:
-Download and run a release, or:
-```console
-    cd FromSoftMessage
-    love .
+Simply download, unzip and run a release.
+I can't test non-windows builds, sorry.  
+.love versions should work cross-platform, but you will need [Love](https://love2d.org/) installed.
+
+### From source
+You will need [Love](https://love2d.org/) installed and added to system PATH.  
+You will also have to clone recursively (for gui only, not to just use the library)  
+then:
 ```
-You will need [Love](https://love2d.org/) installed  (and added to system path if running from console).
-You will also have to clone recursively if running the gui from source (but not to just use the library)
+cd FromSoftMessage
+love .
+```
 
-
-Executable forthcoming (windows only), and hopefully web version
+Hopefully web version forthcoming but no luck so far
 ## Lua library:
 ```lua
 local msg = require "FromsoftMessage"
