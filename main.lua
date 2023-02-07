@@ -1,3 +1,6 @@
+---@diagnostic disable-next-line: undefined-field
+love.window.getDPIScale = love.window.getDPIScale or love.window.getPixelScale or function() return 1.0 end
+
 local Slab = require 'lib.slab'
 local messageGen = require "init"
 
@@ -63,13 +66,14 @@ err = gen()
 
 local bgCol = {20/255,27/255,37/255}
 --{43/255,57/255,77/255}
+local isWeb = love.system.getOS() == "Web"
 function love.load(args)
     love.graphics.setBackgroundColor(unpack(bgCol))
     Slab.SetINIStatePath(nil)
 	Slab.Initialize {
         NoDocks = true
     }
-    if love.system.getOS() == "Web" then
+    if isWeb then
         Slab.SetScrollSpeed(1/6)
     else
         Slab.SetScrollSpeed(20)
@@ -103,7 +107,8 @@ function love.update(dt)
     Slab.BeginLayout("TopSection", { Columns = 3, AlignX = "center"})
         Slab.SetLayoutColumn(1)
             if Slab.Button("Regenerate") then changedSettings = true end
-            if Slab.Button("Copy to Clipboard") then
+            -- clipbaord not supported on web :(
+            if not isWeb and Slab.Button("Copy to Clipboard") then
                 love.system.setClipboardText(table.concat(results, "\n"))
             end
 
