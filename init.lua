@@ -93,6 +93,11 @@ games.er = games.eldenRing
 games.sek = games.sekiro
 
 local random = love and love.math.random or math.random
+if love and love.system.getOS() == "Web" then
+    print(os.time())
+    love.math.setRandomSeed(os.time())
+end
+
 local function choose(t)
     return t[random(#t)]
 end
