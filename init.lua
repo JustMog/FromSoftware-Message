@@ -92,8 +92,9 @@ games.bb = games.bloodborne
 games.er = games.eldenRing
 games.sek = games.sekiro
 
+local random = love and love.math.random or math.random
 local function choose(t)
-    return t[math.random(#t)]
+    return t[random(#t)]
 end
 
 local function getTemplate(templates)
