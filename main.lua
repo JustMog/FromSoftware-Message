@@ -69,6 +69,11 @@ function love.load(args)
 	Slab.Initialize {
         NoDocks = true
     }
+    if love.system.getOS() == "Web" then
+        Slab.SetScrollSpeed(1/6)
+    else
+        Slab.SetScrollSpeed(20)
+    end
 end
 
 function love.update(dt)
@@ -88,7 +93,6 @@ function love.update(dt)
         NoOutline = true,
         --Border = 20, this breaks everything lol
     })
-    Slab.SetScrollSpeed(20)
 
     local changedSettings
 
