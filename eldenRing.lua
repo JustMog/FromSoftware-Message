@@ -116,7 +116,7 @@ words.people = {
     "strange sort",
     "nimble sort",
     "laggardly sort",
-    "incisible sort",
+    "invisible sort",
     "unfathomable sort",
     "giant sort",
     "sinner",
