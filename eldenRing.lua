@@ -1,6 +1,3 @@
-
---[[([A-Za-z\- !'.?]+)\n]]
---[["$1",\n]]
 local eldenRing = {}
 
 eldenRing.templates = {
