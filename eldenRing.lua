@@ -152,7 +152,8 @@ words.battleTactics = {
     "summoning",
     "circling around",
     "jumping off",
-    "dashing through","brief respite",
+    "dashing through",
+    "brief respite",
 }
 
 words.actions = {
