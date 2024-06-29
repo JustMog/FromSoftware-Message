@@ -206,6 +206,7 @@ words.situations = {
     "high spot",
     "defensible spot",
     "climbable spot",
+    "crossable spot",
     "bright spot",
     "dark spot",
     "open area",
